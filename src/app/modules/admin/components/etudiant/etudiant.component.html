@@ -1,0 +1,257 @@
+<p-toast></p-toast>
+<div class="container-fluid">
+    <div class="row">
+        <!-- side menu section -->
+        <app-side-bar></app-side-bar>
+        <div class="mr-mobile-right">
+            <!-- header start -->
+            <app-header></app-header>
+            <!-- header end -->
+            <!-- main content start -->
+               <div class="main-content">
+                  <div class="mt-4 mb-3">
+                    <p-toolbar styleClass="mb-4">
+                        <ng-template pTemplate="left">
+                            <button (click)="createEtudiant()" [disabled]="isGettingAll" pButton pRipple label="nouveau" icon="pi pi-plus" class="p-button-success mr-2"></button>
+                            <!-- <button pButton pRipple label="supprimer" icon="pi pi-trash" class="p-button-danger"></button> -->
+                        </ng-template>
+
+                        <ng-template pTemplate="right">
+                              <button type="button"
+                                  [disabled]="isGettingAll"
+                                  (click) = "handleFileDialog()"
+                                  label="importer"
+                                  pButton pRipple icon="pi pi-upload"
+                                  class="p-button-info mr-2"
+                                  pTooltip="importer des fichiers csv et xlx." tooltipPosition="bottom"
+                              ></button>
+                            <div class="flex">
+                              <!-- <button type="button" pButton pRipple icon="pi pi-file" (click)="dt.exportCSV()" class="mr-2" pTooltip="CSV" tooltipPosition="bottom"></button> -->
+                              <button type="button" [disabled]="isGettingAll || this.etudiantList.length == 0" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" label="Exporter" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                              <!-- <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
+                              <!-- <button type="button" pButton pRipple icon="pi pi-filter" (click)="dt.exportCSV({selectionOnly:true})" class="p-button-info ml-auto" pTooltip="Selection Only" tooltipPosition="bottom"></button> -->
+                          </div>
+                        </ng-template>
+                    </p-toolbar>
+                  </div>
+                  <p-table #dt [rows]="4" [loading]="isGettingAll" [rowHover]="true" [paginator]="true" [value]="etudiantList" sortMode="multiple"
+                  responsiveLayout="scroll"
+                  [resizableColumns]="true"
+                  [responsive]="true"
+                  currentPageReportTemplate="affiche {first} à {last} sur {totalRecords} entrées"
+                  [showCurrentPageReport]="true"
+                  [globalFilterFields]="['nom', 'email', 'contact', 'parents','classe']"
+                  >
+                  <ng-template pTemplate="caption">
+                    <div class="d-flex p-ai-center justify-content-between">
+                      <h5 class="p-m-0">Manager les etudiants</h5>
+                      <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText [(ngModel)]="search" (input)="dt.filterGlobal(search, 'contains')" type="text" class="form-control" style="padding-left: 30px;"
+                          placeholder="Rechercher..." />
+                      </span>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th style="width: 3rem">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                      </th>
+                      <th pSortableColumn="nom">Nom <p-sortIcon field="nom"></p-sortIcon>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="contact">Contact <p-sortIcon field="contact"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="parents">Parents <p-sortIcon field="parents"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="classe">Classe <p-sortIcon field="classe"></p-sortIcon>
+                      </th>
+                      <th>actions</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-etudiantItem>
+                    <tr>
+                      <td>
+                        <p-tableCheckbox [value]="etudiantItem"></p-tableCheckbox>
+                      </td>
+                      <td>{{etudiantItem.nom + " " +etudiantItem.prenom }}</td>
+                      <td>{{etudiantItem.email}}</td>
+                      <td>{{etudiantItem.telephone}}</td>
+                      <td>{{etudiantItem.telephoneDeLaMere + "/" + etudiantItem.telephoneDuPere }}</td>
+                      <td>{{etudiantItem.classe}}</td>
+                      <td>
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-1"
+                          (click)="editEtudiant(etudiantItem, $event)"></button>
+                          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded mr-1 p-button-danger"
+                          (click)="dropEtudiant(etudiantItem.code, etudiantItem.libelle)"></button>
+                          <button pButton pRipple pTooltip="nouvelle etudaint" icon="pi pi-user"
+                          class="p-button-rounded p-button-primary"></button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  </p-table>
+                  <ng-template pTemplate="header">
+                    <div class="d-flex align-items-center justify-content-between">
+                      Il ya au total {{ etudiantList ? etudiantList.length : 0 }} etudiant(s).
+                    </div>
+                  </ng-template>
+                </div>
+            <!-- main content end -->
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog [style]="{width: '650px'}"></p-confirmDialog>
+<p-dialog [style]="{width: '750px'}" [header]=" isUpdating == true ? 'Modifier '+ this.etudiant.libelle.toString().slice(0,15)+'...' : 'Nouvelle etudiant'" [(visible)]="etudiantDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="etudiantForm" (ngSubmit)="saveEtudiant($event)">
+    <div class="form-group" disabled>
+      <label for="code">code</label>
+      <input id="code" [disabled]="true" class="form-control" type="text" name="code" [value]="this.etudiant.code">
+    </div>
+    <div class="form-group" disabled>
+      <label for="matricule">Matricule</label>
+      <input id="matricule" [disabled]="true" class="form-control" type="text" formControlName="matricule" [(ngModel)]="this.etudiant.matricule">
+    </div>
+    <div class="form-group" disabled>
+      <label for="codeAuthentification">Code Authentification</label>
+      <input id="codeAuthentification" [disabled]="true" class="form-control" type="text" formControlName="codeAuthentification" [(ngModel)]="this.etudiant.codeAuthentification">
+    </div>
+    <div class="d-flex">
+      <div class="form-group w-50 mr-1">
+        <label for="nom">Nom</label>
+        <input id="nom" class="form-control" type="text" formControlName="nom" [(ngModel)]="this.etudiant.nom">
+      </div>
+      <div class="form-group w-50">
+        <label for="prenom">Prenom</label>
+        <input id="prenom" class="form-control" type="text" formControlName="prenom" [(ngModel)]="this.etudiant.prenom">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="regionOrigine">Region</label>
+      <input id="regionOrigine" class="form-control" type="text" formControlName="regionOrigine" [(ngModel)]="this.etudiant.regionOrigine">
+    </div>
+    <div class="d-flex">
+      <div class="form-group w-50 mr-1">
+        <label for="email">Email</label>
+        <input id="email" class="form-control" type="text" formControlName="email" [(ngModel)]="this.etudiant.email">
+      </div>
+      <div class="form-group w-50">
+        <label for="telephone">Telephone</label>
+        <input id="telephone" class="form-control" type="text" formControlName="telephone" [(ngModel)]="this.etudiant.telephone">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="sexe">Genre</label>
+      <select id="sexe" class="form-control" formControlName="sexe" [(ngModel)]="this.etudiant.sexe">
+        <option  value="MASCULIN">Masculin</option>
+        <option  value="FEMININ">Feminin</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="libelle">Libelle</label>
+      <input id="libelle" class="form-control" type="text" formControlName="libelle" [(ngModel)]="this.etudiant.libelle">
+    </div>
+    <div class="form-group">
+      <label for="status-vie">Status vie</label>
+      <select id="status-vie" class="form-control" formControlName="statutVie" [(ngModel)]="this.etudiant.statutVie">
+        <option [selected]="this.etudiant.statutVie == 'ACTIVE'" value="ACTIVE">active</option>
+        <option [selected]="this.etudiant.statutVie == 'ATTENTE'" value="ATTENTE">attente</option>
+        <option [selected]="this.etudiant.statutVie == 'CLOTUREE'" value="CLOTUREE">cloturée</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" class="form-control" formControlName="statut" [(ngModel)]="this.etudiant.statut">
+        <option [selected]="this.etudiant.statutVie == 'ACTIVE'" value="ACTIVE">active</option>
+        <option [selected]="this.etudiant.statutVie == 'NON-ACTIVE'" value="ATTENTE">non active</option>
+      </select>
+    </div>
+    <div class="d-flex">
+      <div class="form-group w-50 mr-1">
+        <label for="dateNaissance">Date naissance</label>
+        <input id="dateNaissance" class="form-control" type="date" formControlName="dateNaissance" [(ngModel)]="this.etudiant.dateNaissance">
+      </div>
+      <div class="form-group w-50">
+        <label for="lieuNaissance">Lieu de naissance</label>
+        <input id="lieuNaissance" class="form-control" type="text" formControlName="lieuNaissance" [(ngModel)]="this.etudiant.lieuNaissance">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="ecoleOrigine">Ecole</label>
+      <input id="ecoleOrigine" class="form-control" type="text" formControlName="ecoleOrigine" [(ngModel)]="this.etudiant.ecoleOrigine">
+    </div>
+    <div class="d-flex">
+      <div class="form-group w-50 mr-1">
+        <label for="nomDuPere">Nom du DuPere</label>
+        <input id="nomDuPere" class="form-control" type="text" formControlName="nomDuPere" [(ngModel)]="this.etudiant.nomDuPere">
+      </div>
+      <div class="form-group w-50">
+        <label for="telephoneDuPere">Telephone du DuPere</label>
+        <input id="telephoneDuPere" class="form-control" type="text" formControlName="telephoneDuPere" [(ngModel)]="this.etudiant.telephoneDuPere">
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="form-group w-50 mr-1">
+        <label for="nomDeLaMere">Nom de la DeLaMere</label>
+        <input id="nomDeLaMere" class="form-control" type="text" formControlName="nomDeLaMere" [(ngModel)]="this.etudiant.nomDeLaMere">
+      </div>
+      <div class="form-group w-50">
+        <label for="telephoneDeLaMere">Telephone de la DeLaMere</label>
+        <input id="telephoneDeLaMere" class="form-control" type="text" formControlName="telephoneDeLaMere" [(ngModel)]="this.etudiant.telephoneDeLaMere">
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="form-group w-50 mr-1">
+        <label for="professionDelaMere">Proffession de la DeLaMere</label>
+        <input id="professionDelaMere" class="form-control" type="text" formControlName="professionDelaMere" [(ngModel)]="this.etudiant.professionDelaMere">
+      </div>
+      <div class="form-group w-50">
+        <label for="professionDuPere">Proffession du DuPere</label>
+        <input id="professionDuPere" class="form-control" type="text" formControlName="professionDuPere" [(ngModel)]="this.etudiant.professionDuPere">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="classe">Classe</label>
+      <select id="classe" class="form-control" formControlName="classe" [(ngModel)]="this.etudiant.classId">
+        <option *ngFor="let item of classeList"  [selected]="this.etudiant.classId == item.code" [value]="item.code">{{ item.libelle }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" class="form-control" formControlName="description" rows="4" [(ngModel)]="this.etudiant.description"></textarea>
+    </div>
+
+    <div class="d-flex">
+      <button type="submit" [disabled]="etudiantForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-50 mr-1">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" classe="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+      <button type="reset" [disabled]="isUpdating || senddingRequest" class="btn btn-danger w-50 ml-1" (click)="annuler()">effacer</button>
+    </div>
+  </form>
+</p-dialog>
+
+
+
+<p-dialog [style]="{width: '400px'}" header="importer un fichier" [(visible)]="fileDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="fileForm" id="file-form" (ngSubmit)="saveManyEtudiant($event)">
+    <div class="form-group">
+      <label for="file">Fichier</label>
+      <input id="file" class="form-control" type="file" (change)="onChange($event)" formControlName="file">
+    </div>
+    <div class="d-flex">
+      <button type="submit" [disabled]="fileForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-100">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" classe="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </form>
+</p-dialog>

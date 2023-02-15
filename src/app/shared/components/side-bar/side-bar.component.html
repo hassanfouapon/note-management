@@ -1,0 +1,333 @@
+<div class="side-bar position-mobile">
+  <div class="side-logo d-flex align-items-center justify-content-between w-100">
+      <!-- <img class="logo" src="./assets/images/logo.svg" alt=""> -->
+      <h2 class="logo m-0 p-0">ISJ<span>NOTE</span></h2>
+
+      <div class="close d-flex align-items-center justify-content-center">
+          <i class="pi pi-times"></i>
+      </div>
+  </div>
+
+  <ul class="side-menu-list">
+      <li  routerLinkActive="active" class="menu-item" routerLinkActive="active">
+          <a href="javascript:;">
+              <i class="pi pi-th-large"></i>
+              <span>
+                  <small>Dashboard</small>
+              </span>
+          </a>
+      </li>
+      <li  routerLinkActive="active" class="menu-item has-sub"  routerlinkActive="active">
+        <a href="javascript:;" class="position-relative">
+            <i class="pi pi-wallet" aria-hidden="true"></i>
+            <span>
+                <small>Scolarité</small>
+            </span>
+            <i class="pi pi-angle-down position-absolute arrow"></i>
+        </a>
+        <div class="sub-menu">
+          <ul class="sub-menu-list">
+            <li  routerLinkActive="active" class="sub-menu-item">
+              <a href="javascript:;">
+                <i class="pi pi-wallet" aria-hidden="true"></i>
+                <span>
+                    <small>Procés verbaux</small>
+                </span>
+              </a>
+            </li>
+            <li  routerLinkActive="active" class="sub-menu-item">
+              <a href="javascript:;">
+                <i class="pi pi-wallet" aria-hidden="true"></i>
+                <span>
+                    <small>Relevés de notes</small>
+                </span>
+              </a>
+            </li>
+            <li  routerLinkActive="active" class="sub-menu-item">
+              <a href="javascript:;">
+                <i class="pi pi-wallet" aria-hidden="true"></i>
+                <span>
+                    <small>Attestations / Diplômes</small>
+                </span>
+              </a>
+            </li>
+            <li  routerLinkActive="active" class="sub-menu-item">
+              <a href="javascript:;">
+                <i class="pi pi-wallet" aria-hidden="true"></i>
+                <span>
+                    <small>Cartes d'etudiants</small>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+    </li>
+      <li  routerLinkActive="active" class="menu-item has-sub">
+          <a href="javascript:;" class="position-relative">
+              <i class="pi pi-users" aria-hidden="true"></i>
+              <span>
+                  <small>Etudiants</small>
+              </span>
+              <i class="pi pi-angle-down position-absolute arrow"></i>
+          </a>
+          <div class="sub-menu">
+            <ul class="sub-menu-list">
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="#" [routerLink]="'/admin/etudiants'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>liste des etudiants</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="#" [routerLink]="'/admin/candidats'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Candidats</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Inscriptions aux UE</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Discipline</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Anonymat</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Notes semestrielles</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Notes intermediaires</small>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+      </li>
+      <li  routerLinkActive="active" class="menu-item has-sub">
+          <a href="javascript:;" class="position-relative">
+              <i class="pi pi-briefcase" aria-hidden="true"></i>
+              <span>
+                  <small>Enseignants</small>
+              </span>
+              <i class="pi pi-angle-down position-absolute arrow"></i>
+          </a>
+          <div class="sub-menu">
+            <ul class="sub-menu-li">
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>liste des enseignants</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Enseignements</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Unité d'enseignement</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Module</small>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+      </li>
+      <li  routerLinkActive="active" class="menu-item has-sub">
+          <a href="javascript:;" class="position-relative">
+              <i class="pi pi-home" aria-hidden="true"></i>
+              <span>
+                  <small>Classes</small>
+              </span>
+              <i class="pi pi-angle-down position-absolute arrow"></i>
+          </a>
+          <div class="sub-menu">
+            <ul class="sub-menu-list">
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="#" [routerLink]="'/admin/classes'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>liste des classes</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerlinkActive="active" class="sub-menu-item">
+                <a href="javascript:;" [routerLink]="'/admin/specialites'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Spécialités</small>
+                  </span>
+                </a>
+              </li>
+              <li class="sub-menu-item" routerlinkActive="active">
+                <a href="#"  [routerLink]="'/admin/filieres'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Filières</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="#"  [routerLink]="'/admin/niveau'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Niveaux</small>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+      </li>
+      <li  routerLinkActive="active" class="menu-item">
+          <a href="javascript:;">
+              <i class="pi pi-envelope" aria-hidden="true"></i>
+              <span>
+                  <small>Messages</small>
+                  <small class="badge badge-pill badge-danger ml-2">10</small>
+              </span>
+          </a>
+      </li>
+      <li  routerLinkActive="active" class="menu-item has-sub">
+          <a href="javascript:;" class="position-relative" >
+              <i class="pi pi-chart-line" aria-hidden="true"></i>
+              <span>
+                  <small>Semestres</small>
+              </span>
+              <i class="pi pi-angle-down position-absolute arrow"></i>
+          </a>
+          <div class="sub-menu">
+            <ul class="sub-menu-list">
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="#"  [routerLink]="'/admin/annee-academique'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                    <small>Année académique</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="#" [routerLink]="'/admin/semestre'">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Semestre</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Type d'évaluation</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Evaluations</small>
+                  </span>
+                </a>
+              </li>
+              <li  routerLinkActive="active" class="sub-menu-item">
+                <a href="javascript:;">
+                  <i class="pi pi-wallet" aria-hidden="true"></i>
+                  <span>
+                      <small>Historique de notes</small>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+      </li>
+      <li  routerLinkActive="active" class="menu-item">
+        <a href="javascript:;">
+            <i class="pi pi-users" aria-hidden="true"></i>
+            <span>
+                <small>Utilisateurs</small>
+            </span>
+        </a>
+    </li>
+    <li  routerLinkActive="active" class="menu-item has-sub">
+      <a href="javascript:;" class="position-relative">
+          <i class="pi pi-cog" aria-hidden="true"></i>
+          <span>
+              <small>Paramettres</small>
+          </span>
+          <i class="pi pi-angle-down position-absolute arrow"></i>
+      </a>
+      <div class="sub-menu">
+        <ul class="sub-menu-list">
+          <li class="sub-menu-item" routerlinkActive="active">
+            <a href="#"  [routerLink]="'/admin/role'">
+              <i class="pi pi-user" aria-hidden="true"></i>
+              <span>
+                  <small>Role</small>
+              </span>
+            </a>
+          </li>
+          <li  routerLinkActive="active" class="sub-menu-item">
+            <a href="#"  [routerLink]="'/admin/droit'">
+              <i class="pi pi-wallet" aria-hidden="true"></i>
+              <span>
+                  <small>Droit</small>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+  </li>
+  </ul>
+
+  <div class="end" (click) = "disconnect()">
+      <a href="javascript:;" class="d-flex align-items-center">
+          <i class="pi pi-sign-out" aria-hidden="true"></i>
+          <span class="ml-2">
+              <small>Logout</small>
+          </span>
+      </a>
+  </div>
+</div>

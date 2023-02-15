@@ -1,0 +1,29 @@
+<div class="main-contain">
+    <div class="img w-100 h-100">
+        <img src="./assets/images/login-left-1.jpg" alt="">
+    </div>
+    <div class="form position-absolute">
+        <div>
+            <img class="mr-auto ml-auto d-block mb-4 logo" src="./assets/images/logo-isj.png" alt="">
+            <form [formGroup]="loginForm" action="#" (submit)="login()" method="post">
+                <div class="form-group mb-3">
+                    <label for="#username">Login</label>
+                    <input type="text" placeholder="votre login" formControlName="login" id="unername" class="form-control" >
+                </div>
+                <div class="form-group">
+                    <label for="#pass">Mot de passe</label>
+                    <input type="password" placeholder="votre mot de passe" id="pass" formControlName='password' class="form-control" />
+                </div>
+                
+                <button type="submit" [disabled]="loginForm.invalid || submitting" class="btn d-flex justify-content-center align-items-center w-100  mt-2 ">
+                    <span *ngIf="!submitting">connexion</span>
+                    <div *ngIf="submitting" class="spinner-border text-sucess" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<p-toast></p-toast>

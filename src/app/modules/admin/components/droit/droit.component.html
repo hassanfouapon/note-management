@@ -1,0 +1,188 @@
+<p-toast></p-toast>
+<div class="container-fluid">
+    <div class="row">
+        <!-- side menu section -->
+        <app-side-bar></app-side-bar>
+        <div class="mr-mobile-right">
+            <!-- header start -->
+            <app-header></app-header>
+            <!-- header end -->
+            <!-- main content start -->
+               <div class="main-content"> 
+                  <div class="mt-4 mb-3">
+                    <p-toolbar styleClass="mb-4">
+                        <ng-template pTemplate="left">
+                            <button (click)="createDroit()" [disabled]="isGettingAll" pButton pRipple label="nouveau" icon="pi pi-plus" class="p-button-success mr-2"></button>
+                            <!-- <button pButton pRipple label="supprimer" icon="pi pi-trash" class="p-button-danger"></button> -->
+                        </ng-template>
+    
+                        <ng-template pTemplate="right">
+                              <button type="button"
+                                  [disabled]="isGettingAll"
+                                  (click) = "handleFileDialog()"
+                                  label="importer"
+                                  pButton pRipple icon="pi pi-upload"
+                                  class="p-button-info mr-2"
+                                  pTooltip="importer des fichiers csv et xlx." tooltipPosition="bottom"
+                              ></button>
+                            <div class="flex">
+                              <!-- <button type="button" pButton pRipple icon="pi pi-file" (click)="dt.exportCSV()" class="mr-2" pTooltip="CSV" tooltipPosition="bottom"></button> -->
+                              <button type="button" [disabled]="isGettingAll || this.droitList.length == 0" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" label="Exporter" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                              <!-- <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
+                              <!-- <button type="button" pButton pRipple icon="pi pi-filter" (click)="dt.exportCSV({selectionOnly:true})" class="p-button-info ml-auto" pTooltip="Selection Only" tooltipPosition="bottom"></button> -->
+                          </div>
+                        </ng-template>
+                    </p-toolbar>
+                  </div>
+                  <p-table #dt [rows]="4" [loading]="isGettingAll" [rowHover]="true" [paginator]="true" [value]="droitList" sortMode="multiple"
+                  responsiveLayout="scroll"
+                  [resizableColumns]="true"
+                  [responsive]="true"
+                  currentPageReportTemplate="affiche {first} à {last} sur {totalRecords} entrées"
+                  [showCurrentPageReport]="true"
+                  [globalFilterFields]="['libelle','description', 'statutVie', 'permissions']"
+                  >
+                  <ng-template pTemplate="caption">
+                    <div class="d-flex p-ai-center justify-content-between">
+                      <h5 class="p-m-0">Manager les Droits</h5>
+                      <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText [(ngModel)]="search" (input)="dt.filterGlobal(search, 'contains')" type="text" class="form-control" style="padding-left: 30px;"
+                          placeholder="Rechercher..." />
+                      </span>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th style="width: 3rem">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                      </th>
+                      <th pSortableColumn="libelle">libelle <p-sortIcon field="libelle"></p-sortIcon>
+                        <th pSortableColumn="permissions">permissions <p-sortIcon field="permissions"></p-sortIcon> 
+                        <th pSortableColumn="statutVie">status <p-sortIcon field="statutVie"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="description">description <p-sortIcon field="description"></p-sortIcon>
+                      </th>
+                      <th>actions</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-droitItem>
+                    <tr>
+                      <td>
+                        <p-tableCheckbox [value]="droitItem"></p-tableCheckbox>
+                      </td>
+                      <td>{{droitItem.libelle}}</td>
+                      <td>
+                        <span [class]="'badge badge-pill ' + (droitItem.libelle.lecture == false ? 'badge-danger' : 'badge-success')">lecture</span>
+                        <span [class]="'badge badge-pill ' + (droitItem.libelle.ecriture == false ? 'badge-danger' : 'badge-success')">ecriture</span>
+                        <span [class]="'badge badge-pill ' + (droitItem.libelle.modification == false ? 'badge-danger' : 'badge-success')">modification</span>
+                        <span [class]="'badge badge-pill ' + (droitItem.libelle.suppression == false ? 'badge-danger' : 'badge-success')">suppression</span>
+                      </td>
+                      <td>{{droitItem.statutVie}}</td>
+                      <td>{{droitItem.description}}</td>
+                      <td>
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
+                          (click)="editDroit(droitItem, $event)"></button>
+                          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                          (click)="dropDroit(droitItem.code, droitItem.libelle)"></button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  </p-table>
+                  <ng-template pTemplate="header">
+                    <div class="d-flex align-items-center justify-content-between">
+                      Il ya au total {{ droitList ? droitList.length : 0 }} droit(s).
+                    </div>
+                  </ng-template>
+                </div>
+            <!-- main content end -->
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<p-dialog [style]="{width: '750px'}" [header]=" isUpdating == true ? 'Modifier '+this.droit.libelle : 'Nouveau Droit'" [(visible)]="droitDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="droitForm" (ngSubmit)="saveDroit($event)">
+    <div class="form-group" disabled>
+      <label for="code">code</label>
+      <input id="code" [disabled]="true" class="form-control" type="text" name="code" [value]="this.droit.code">
+    </div>
+    <div class="form-group">
+      <label for="libelle">Libelle</label>
+      <input id="libelle" class="form-control" type="text" formControlName="libelle" [(ngModel)]="this.droit.libelle">
+    </div>
+    <div class="form-group">
+      <label for="categorie">Categorie</label>
+      <input id="categorie" class="form-control" type="text" formControlName="categorie" [(ngModel)]="this.droit.categorie">
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" class="form-control" formControlName="statutVie" [(ngModel)]="this.droit.statutVie">
+        <option [selected]="this.droit.statutVie == 'ACTIVE'" value="ACTIVE">active</option>
+        <option [selected]="this.droit.statutVie == 'ATTENTE'" value="ATTENTE">attente</option>
+        <option [selected]="this.droit.statutVie == 'CLOTUREE'" value="CLOTUREE">cloturée</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="role">Role</label>
+      <select id="role" class="form-control" formControlName="role" [(ngModel)]="this.droit.roleId">
+        <option *ngFor="let item of roleList"  [selected]="this.droit.roleId.toString() == item.code" [value]="item.code">{{ item.libelle }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="permissions" class="d-block">Permissions</label>
+      <span class="d-flex justify-content-start align-items-center">
+        <input type="checkbox" id="lecture" formControlName="lecture" [(ngModel)]="this.droit.lecture">
+        <label for="lecture" class="ml-1 mb-0">Lecture</label>
+      </span>
+      <span class="d-flex justify-content-start align-items-center">
+        <input type="checkbox" id="ecriture" formControlName="ecriture" [(ngModel)]="this.droit.ecriture">
+        <label for="ecriture" class="ml-1 mb-0">Ecriture</label>
+      </span>
+      <span class="d-flex justify-content-start align-items-center">
+        <input type="checkbox" id="modification" formControlName="modification" [(ngModel)]="this.droit.modification">
+        <label for="modification" class="ml-1 mb-0">Modification</label>
+      </span>
+      <span class="d-flex justify-content-start align-items-center">
+        <input type="checkbox" id="suppression" formControlName="suppression" [(ngModel)]="this.droit.suppression">
+        <label for="suppression" class="ml-1 mb-0">Suppression</label>
+      </span>
+      
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" class="form-control" formControlName="description" rows="4" [(ngModel)]="this.droit.description"></textarea>
+    </div>
+
+    <div class="d-flex">
+      <button type="submit" [disabled]="droitForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-50 mr-1">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+      <button type="reset" [disabled]="isUpdating || senddingRequest" class="btn btn-danger w-50 ml-1" (click)="annuler()">effacer</button>
+    </div>
+  </form>
+</p-dialog>
+
+
+
+<p-dialog [style]="{width: '400px'}" header="importer un fichier" [(visible)]="fileDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="fileForm" id="file-form" (ngSubmit)="saveManyDroit($event)">
+    <div class="form-group">
+      <label for="file">Fichier</label>
+      <input id="file" class="form-control" type="file" (change)="onChange($event)" formControlName="file">
+    </div>
+    <div class="d-flex">
+      <button type="submit" [disabled]="fileForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-100">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </form>
+</p-dialog>

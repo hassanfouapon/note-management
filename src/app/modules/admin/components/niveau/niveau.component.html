@@ -1,0 +1,155 @@
+<p-toast></p-toast>
+<div class="container-fluid">
+    <div class="row">
+        <!-- side menu section -->
+        <app-side-bar></app-side-bar>
+        <div class="mr-mobile-right">
+            <!-- header start -->
+            <app-header></app-header>
+            <!-- header end -->
+            <!-- main content start -->
+               <div class="main-content">
+                  <div class="mt-4 mb-3">
+                    <p-toolbar styleClass="mb-4">
+                        <ng-template pTemplate="left">
+                            <button (click)="createNiveau()" pButton pRipple label="nouveau" icon="pi pi-plus" class="p-button-success mr-2"></button>
+                            <!-- <button pButton pRipple label="supprimer" icon="pi pi-trash" class="p-button-danger"></button> -->
+                        </ng-template>
+
+                        <ng-template pTemplate="right">
+                            <button type="button"
+                                [disabled]="isGettingAll"
+                                (click) = "handleFileDialog()"
+                                label="importer"
+                                pButton pRipple icon="pi pi-upload"
+                                class="p-button-info mr-2"
+                                pTooltip="importer des fichiers csv et xlx." tooltipPosition="bottom"
+                            ></button>
+
+                            <div class="flex">
+                              <!-- <button type="button" pButton pRipple icon="pi pi-file" (click)="dt.exportCSV()" class="mr-2" pTooltip="CSV" tooltipPosition="bottom"></button> -->
+                              <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" label="Exporter" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                              <!-- <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
+                              <!-- <button type="button" pButton pRipple icon="pi pi-filter" (click)="dt.exportCSV({selectionOnly:true})" class="p-button-info ml-auto" pTooltip="Selection Only" tooltipPosition="bottom"></button> -->
+                          </div>
+                        </ng-template>
+                    </p-toolbar>
+                  </div>
+                  <p-table #dt [rows]="4" [loading]="isGettingAll" [rowHover]="true" [paginator]="true" [value]="niveauList" sortMode="multiple"
+                  responsiveLayout="scroll"
+                  [resizableColumns]="true"
+                  [responsive]="true"
+                  currentPageReportTemplate="affiche {first} à {last} sur {totalRecords} entrées"
+                  [showCurrentPageReport]="true"
+                  [globalFilterFields]="['libelle','description', 'statutVie', 'numero']"
+                  >
+                  <ng-template pTemplate="caption">
+                    <div class="d-flex p-ai-center justify-content-between">
+                      <h5 class="p-m-0">Manager les Niveaux</h5>
+                      <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText [(ngModel)]="search" (input)="dt.filterGlobal(search, 'contains')" type="text" class="form-control" style="padding-left: 30px;"
+                          placeholder="Rechercher..." />
+                      </span>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th style="width: 3rem">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                      </th>
+                      <th pSortableColumn="libelle">libelle <p-sortIcon field="libelle"></p-sortIcon>
+                        <th pSortableColumn="statutVie">status <p-sortIcon field="statutVie"></p-sortIcon>
+                      </th>
+                      <th pSortableColumn="description">description <p-sortIcon field="description"></p-sortIcon>
+                      </th>
+                      <th>actions</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-niveauItem>
+                    <tr>
+                      <td>
+                        <p-tableCheckbox [value]="niveauItem"></p-tableCheckbox>
+                      </td>
+                      <td>{{niveauItem.libelle}}</td>
+                      <td>{{niveauItem.statutVie}}</td>
+                      <td>{{niveauItem.description}}</td>
+                      <td>
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
+                          (click)="editNiveau(niveauItem, $event)"></button>
+                          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                          (click)="dropNiveau(niveauItem.code, niveauItem.libelle)"></button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  </p-table>
+                  <ng-template pTemplate="header">
+                    <div class="d-flex align-items-center justify-content-between">
+                      Il ya au total {{ niveauList ? niveauList.length : 0 }} niveau(x).
+                    </div>
+                  </ng-template>
+                </div>
+            <!-- main content end -->
+        </div>
+    </div>
+</div>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<p-dialog [style]="{width: '750px'}" header="isUpdating == true ? 'Modifier '+this.niveau.libelle : 'Nouveau Niveau'" [(visible)]="niveauDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="niveauForm" (ngSubmit)="saveNiveau($event)">
+    <div class="form-group" disabled>
+      <label for="code">code</label>
+      <input id="code" [disabled]="true" class="form-control" type="text" name="code" [value]="this.niveau.code">
+    </div>
+    <div class="form-group" disabled>
+      <label for="numero">Numero</label>
+      <input id="numero" [disabled]="true" class="form-control" type="number" formControlName="numero" name="numero" [(ngModel)]="this.niveau.numero">
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" class="form-control" formControlName="statutVie" [(ngModel)]="this.niveau.statutVie">
+        <option [selected]="this.niveau.statutVie == 'ACTIVE'" value="ACTIVE">active</option>
+        <option [selected]="this.niveau.statutVie == 'ATTENTE'" value="ATTENTE">attente</option>
+        <option [selected]="this.niveau.statutVie == 'CLOTUREE'" value="CLOTUREE">cloturée</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="titre">Libelle</label>
+      <input id="titre" class="form-control" type="text" formControlName="libelle" [(ngModel)]="this.niveau.libelle">
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" class="form-control" formControlName="description" rows="4" [(ngModel)]="this.niveau.description"></textarea>
+    </div>
+
+    <div class="d-flex">
+      <button type="submit" [disabled]="niveauForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-50 mr-1">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+      <button type="reset" [disabled]="isUpdating || senddingRequest" class="btn btn-danger w-50 ml-1" (click)="annuler()">effacer</button>
+    </div>
+  </form>
+</p-dialog>
+
+
+<p-dialog [style]="{width: '400px'}" header="importer un fichier" [(visible)]="fileDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="fileForm" id="file-form" (ngSubmit)="saveManyNiveau($event)">
+    <div class="form-group">
+      <label for="file">Fichier</label>
+      <input id="file" class="form-control" type="file" (change)="onChange($event)" formControlName="file">
+    </div>
+    <div class="d-flex">
+      <button type="submit" [disabled]="fileForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-100">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </form>
+</p-dialog>

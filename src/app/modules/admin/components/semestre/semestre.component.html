@@ -1,0 +1,190 @@
+<style>
+  .container-fluid {
+    min-height: 100vh
+  }
+
+  .mr-mobile-right {
+    width: 100%
+  }
+
+  .main-content {
+    padding: 1rem;
+    padding-top: 0
+  }
+
+  @media(min-width: 980px) {
+    .mr-mobile-right {
+      width: calc(100% - 18.75rem);
+      margin-left: auto
+    }
+  }
+</style>
+<p-toast></p-toast>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- sidebar -->
+    <app-side-bar></app-side-bar>
+    <!-- positionnement des elements du header a droite -->
+    <div class="mr-mobile-right">
+      <!-- debut du header -->
+      <app-header></app-header>
+      <!-- fin du header -->
+
+      <!-- debut du main content -->
+
+      <div class="main-content">
+        <div class="mt-4 mb-3">
+          <p-toolbar styleClass="mb-4">
+            <ng-template pTemplate="left">
+              <button (click)="createSemestre()" pButton pRipple label="nouveau" icon="pi pi-plus"
+                class="p-button-success mr-2"></button>
+              <!-- <button pButton pRipple label="supprimer" icon="pi pi-trash" class="p-button-danger"></button> -->
+            </ng-template>
+
+            <ng-template pTemplate="right">
+              <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import"
+                class="mr-2 inline-block"></p-fileUpload>
+              <div class="flex">
+                <!-- <button type="button" pButton pRipple icon="pi pi-file" (click)="dt.exportCSV()" class="mr-2" pTooltip="CSV" tooltipPosition="bottom"></button> -->
+                <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" label="Exporter"
+                  class="p-button-success mr-2" pTooltip="XLS" tooltipPosition="bottom"></button>
+                <!-- <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
+                <!-- <button type="button" pButton pRipple icon="pi pi-filter" (click)="dt.exportCSV({selectionOnly:true})" class="p-button-info ml-auto" pTooltip="Selection Only" tooltipPosition="bottom"></button> -->
+              </div>
+            </ng-template>
+          </p-toolbar>
+        </div>
+
+        <!-- creation de la table des specialites -->
+        <p-table #dt [rows]="4" [loading]="isGettingAll" [rowHover]="true" [paginator]="true" [value]="semestreList"
+          sortMode="multiple" responsiveLayout="scroll" [resizableColumns]="true" [responsive]="true"
+          currentPageReportTemplate="affiche {first} à {last} sur {totalRecords} entrées" [showCurrentPageReport]="true"
+          [globalFilterFields]="['libelle', 'description']">
+          <!-- top bar du contenu  -->
+          <ng-template pTemplate="caption">
+            <div class="d-flex p-ai-center justify-content-between">
+              <h5 class="p-m-0">Manager les semestres</h5>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText [(ngModel)]="search" (input)="dt.filterGlobal(search, 'contains')" type="text"
+                  class="form-control" style="padding-left: 30px;" placeholder="Rechercher..." />
+              </span>
+            </div>
+          </ng-template>
+          <!-- fin de cette top bar  -->
+          <!-- entete de notre tableau  -->
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="libelle">libelle <p-sortIcon field="libelle"></p-sortIcon>
+                <!-- <th pSortableColumn="filiere">filière <p-sortIcon field="filiere"></p-sortIcon>
+              </th> -->
+              <th pSortableColumn="statutVie">status <p-sortIcon field="statutVie"></p-sortIcon>
+              <th pSortableColumn="dateDebut">Date Debut <p-sortIcon field="date_debut"></p-sortIcon>
+              <th pSortableColumn="dateFin">Date Fin <p-sortIcon field="date_cloture"></p-sortIcon>
+              <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon>
+              </th>
+              <th>actions</th>
+            </tr>
+          </ng-template>
+          <!-- fin de l'entete du tableau  -->
+          <!-- debut du body du tableau  -->
+          <ng-template pTemplate="body" let-semestresItem>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="semestresItem"></p-tableCheckbox>
+              </td>
+              <td>{{semestresItem.libelle}}</td>
+              <td>{{semestresItem.statutVie}}</td>
+              <td>{{semestresItem.dateDebut| date:'short'}}</td>
+              <td>{{semestresItem.dateCloture| date:'short'}}</td>
+              <td>{{semestresItem.description}}</td>
+              <td>
+                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
+                  (click)="editSemestres(semestresItem, $event)"></button>
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                  (click)="dropSemestres(semestresItem.code)"></button>
+              </td>
+            </tr>
+          </ng-template>
+          <!-- fin du corps du tableau  -->
+        </p-table>
+        <ng-template pTemplate="header">
+          <div class="d-flex align-items-center justify-content-between">
+            Il ya au total {{ semestreList ? semestreList.length : 0 }} Semestre(s).
+          </div>
+        </ng-template>
+      </div>
+      <!-- fin du main content  -->
+    </div>
+  </div>
+</div>
+
+<!-- boite de dialogue des modifications et des ajouts  -->
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<p-dialog [style]="{width: '750px'}" header="Modifier/Ajouter semestres" [(visible)]="semestreDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="semestreForm" (ngSubmit)="saveSemestre($event)">
+    <div class="form-group" disabled>
+      <label for="code">code</label>
+      <input id="code" [disabled]="true" class="form-control" type="text" name="code" [value]="semestre.code">
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" class="form-control" formControlName="statutVie" [(ngModel)]="semestre.statutVie">
+        <option [selected]="semestre.statutVie == 'ACTIVE'" value="ACTIVE">active</option>
+        <option [selected]="semestre.statutVie == 'ATTENTE'" value="ATTENTE">attente</option>
+        <option [selected]="semestre.statutVie == 'CLOTUREE'" value="CLOTUREE">cloturée</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="titre">Libelle</label>
+      <input id="titre" class="form-control" type="text" formControlName="libelle" [(ngModel)]="semestre.libelle"
+        name="libelle">
+    </div>
+    <div class="form-group" disabled>
+      <label for="code">Date Debut</label>
+      <p-calendar id="date_debut" styleClass='form-control p-0 border-0' [(ngModel)]="this.semestre.dateDebut" [showIcon]="true" inputId="icon" dateFormat="dd-mm-yy" formControlName="date_debut" ></p-calendar>
+      <!-- <p-calendar styleClass='form-control p-0 border-0' [touchUI]="true"
+        [showIcon]="true" [showButtonBar]="true" ></p-calendar>
+      </p-calendar> -->
+    </div>
+    <div class="form-group" disabled>
+      <label for="code">Date Cloture</label>
+      <p-calendar id="date_cloture" styleClass='form-control p-0 border-0' [(ngModel)]="this.semestre.dateCloture" [showIcon]="true" inputId="icon" dateFormat="dd-mm-yy" formControlName="date_cloture" ></p-calendar>
+      <!-- <p-calendar id="date_cloture" styleClass='form-control p-0 border-0' [touchUI]="true" dateFormat="dd-mm-yy"
+        formControlName="date_cloture" [showIcon]="true" [showButtonBar]="true"
+        [(ngModel)]="this.semestre.date_cloture"></p-calendar> -->
+    </div>
+    <div class="form-group">
+      <label for="anneeAcademique">Annee Academique</label>
+      <select id="anneeAcademique" class="form-control" formControlName="anneeAcademique"
+        [(ngModel)]="anneeAcademiqueLibelle">
+        <option *ngFor="let an of anneeAcademiqueList ; let i=index" [id]="i" [value]="an.code"
+          [selected]="an.libelle === this.semestre.anneeAcademique">
+          {{an.libelle}}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" class="form-control" formControlName="description" rows="4"
+        [(ngModel)]="this.semestre.description"></textarea>
+    </div>
+
+    <div class="d-flex">
+      <button type="submit" [disabled]="semestreForm.invalid || senddingRequest"
+        class="btn d-flex justify-content-center align-items-center btn-primary w-50 mr-1">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+      <button type="reset" [disabled]="senddingRequest || isUpdating" class="btn btn-danger w-50 ml-1"
+        (click)="annuler()">effacer</button>
+    </div>
+  </form>
+</p-dialog>

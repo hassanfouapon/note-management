@@ -1,0 +1,146 @@
+
+*{
+  box-sizing: border-box;
+}
+
+ul,li{
+  list-style: none;
+}
+a:hover,
+a{
+  text-decoration: none;
+}
+
+
+.navbar-nav {
+  flex-direction: row;
+}
+
+.navbar-brand{
+  display: none;
+  font-weight: 800 !important;
+  color: var(--black) !important;
+}
+
+// .profil .profil-info{
+//   display: none;
+// }
+
+.profil .profil-info h4{
+  font-weight: 400;
+  margin: 0;
+}
+.profil .profil-info span{
+  color: var(--black);
+  font-weight: 600;
+}
+.profil .profil-info h4,
+.profil .profil-info p{
+  font-size: .8rem;
+  margin: 0;
+}
+
+.profil .profil-img{
+  height: 2.5rem;
+  width: 2.5rem;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.profil .profil-img img{
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.color-theme{
+  background-color: var(--light);
+  border-radius: 0.1875rem;
+  width: 5rem;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+
+}
+.color-theme i{
+  transition: var(--transition);
+}
+.color-theme::before{
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 99%;
+  left: 0;
+  background-color: var(--main-clr);
+  border-radius: 0.1875rem;
+  z-index: -1;
+  transition: var(--transition);
+}
+.color-theme span{
+  width: 50%;
+  margin: 0.125rem;
+  padding: .2rem;
+  border-radius: 0.1875rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.color-theme.active-moon::before{
+  left: 100%;
+  transform: translateX(-100%);
+}
+.color-theme.active.active-sun::before{
+  left: 0;
+}
+.color-theme.active.active-sun span .pi-sun,
+.color-theme.active.active-moon span .pi-moon{
+  color: white;
+}
+
+.menu-target{
+  cursor: pointer;
+}
+.mr-mobile-right{
+  width: 100%;
+}
+@media (min-width: 980px){
+  .navbar{
+      background: var(--clr-background) !important;
+  }
+  .side-bar{
+      left: 0;
+      background: var(--clr-background);
+      box-shadow: none;
+  }
+  .mr-mobile-right{
+      width: calc(100% - 18.75rem);
+      margin-left: auto;
+  }
+  .navbar-brand{
+      display: flex;
+      /* text-transform: uppercase; */
+  }
+  .navbar-brand span{
+      color: var(--main-clr);
+  }
+  .menu-target{
+      display: none !important;
+  }
+  .close{
+    opacity: 0;
+  }
+
+  .color-theme{
+      margin-right: 4rem !important;
+  }
+  ul{
+      margin: 0;
+      padding: 0;
+  }
+  .side-bar > ul,.end{
+      padding-left: 1.2rem !important;
+  }
+}
+@media(max-width:400px){
+  .profil-info{
+    display: none;
+  }
+}

@@ -1,0 +1,161 @@
+<p-toast></p-toast>
+<div class="container-fluid">
+  <div class="row">
+    <!-- side menu section -->
+    <app-side-bar></app-side-bar>
+    <div class="mr-mobile-right">
+      <!-- header start -->
+      <app-header></app-header>
+      <!-- header end -->
+      <!-- main content start -->
+      <div class="main-content">
+        <div class="mt-4 mb-3">
+          <p-toolbar styleClass="mb-4">
+              <ng-template pTemplate="left">
+                <button (click)="createFiliere()" pButton pRipple label="nouveau" icon="pi pi-plus"
+                  class="p-button-success mr-2"></button>
+                <!-- <button pButton pRipple label="supprimer" icon="pi pi-trash" class="p-button-danger"></button> -->
+              </ng-template>
+
+            <ng-template pTemplate="right">
+              <button type="button" [disabled]="isGettingAll" (click)="handleFileDialog()" label="importer" pButton
+                pRipple icon="pi pi-upload" class="p-button-info mr-2" pTooltip="importer des fichiers csv et xlx."
+                tooltipPosition="bottom"></button>
+
+                        <div class="flex">
+                          <!-- <button type="button" pButton pRipple icon="pi pi-file" (click)="dt.exportCSV()" class="mr-2" pTooltip="CSV" tooltipPosition="bottom"></button> -->
+                          <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" label="Exporter" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                          <!-- <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
+                          <!-- <button type="button" pButton pRipple icon="pi pi-filter" (click)="dt.exportCSV({selectionOnly:true})" class="p-button-info ml-auto" pTooltip="Selection Only" tooltipPosition="bottom"></button> -->
+                        </div>
+                    </ng-template>
+                <!-- <p-button (click)="createFiliere()" icon="pi pi-plus" label="AJOUTER" class="text-white"></p-button> -->
+          </p-toolbar>
+          <!-- <p-button (click)="createFiliere()" icon="pi pi-plus" label="AJOUTER" class="text-white"></p-button> -->
+        </div>
+
+              <p-table #dt [rows]="4" [loading]="isGettingAll" [rowHover]="true" [paginator]="true" [value]="filiereList" sortMode="multiple"
+                responsiveLayout="scroll"
+                [resizableColumns]="true"
+                [responsive]="true"
+                currentPageReportTemplate="affiche {first} à {last} sur {totalRecords} entrées"
+                [showCurrentPageReport]="true"
+                [globalFilterFields]="['libelle','description', 'statutVie']"
+                >
+                <ng-template pTemplate="caption">
+                  <div class="d-flex p-ai-center justify-content-between">
+                    <h5 class="p-m-0">Manager les filieres</h5>
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-search"></i>
+                      <input pInputText [(ngModel)]="search" (input)="dt.filterGlobal(search, 'contains')" type="text" class="form-control" style="padding-left: 30px;"
+                        placeholder="Rechercher..." />
+                    </span>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 3rem">
+                      <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th pSortableColumn="libelle">libelle <p-sortIcon field="libelle"></p-sortIcon>
+                      <th pSortableColumn="statutVie">status <p-sortIcon field="statutVie"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="description">description <p-sortIcon field="description"></p-sortIcon>
+                    </th>
+                    <th>actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-filieresItem>
+                  <tr>
+                    <td>
+                      <p-tableCheckbox [value]="filieresItem"></p-tableCheckbox>
+                    </td>
+                    <td>{{filieresItem.libelle}}</td>
+                    <td>{{filieresItem.statutVie}}</td>
+                    <td>{{filieresItem.description}}</td>
+                    <td>
+                      <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
+                        (click)="editFiliere(filieresItem, $event)"></button>
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                        (click)="dropFiliere(filieresItem.code, filieresItem.libelle)"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <ng-template pTemplate="header">
+                <div class="d-flex align-items-center justify-content-between">
+                  Il ya au total {{ filiereList ? filiereList.length : 0 }} filiere(s).
+                </div>
+              </ng-template>
+             </div>
+          <!-- main content end -->
+    </div>
+    <!-- main content end -->
+  </div>
+  <!-- main content end -->
+</div>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<<<<<<< HEAD
+<p-dialog [style]="{width: '750px'}" header="isUpdating == true ? 'Modifier '+this.filiere.libelle : 'Nouvelle Filiere'"
+  [(visible)]="filiereDialog" [modal]="true" [maximizable]="true" [baseZIndex]="10000" [draggable]="false"
+  [resizable]="false">
+=======
+<p-dialog [style]="{width: '750px'}" header="isUpdating == true ? 'Modifier '+ this.filiere.libelle : 'Nouvelle Filiere'" [(visible)]="filiereDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+>>>>>>> 0f93b1fb57d74fe30e063b27e699571432889ae1
+  <form [formGroup]="filiereForm" (ngSubmit)="saveFiliere($event)">
+    <div class="form-group" disabled>
+      <label for="code">code</label>
+      <input id="code" [disabled]="true" class="form-control" type="text" name="code" [value]="this.filiere.code">
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" class="form-control" formControlName="statutVie" [(ngModel)]="this.filiere.statutVie">
+        <option [selected]="this.filiere.statutVie == 'ACTIVE'" value="ACTIVE">active</option>
+        <option [selected]="this.filiere.statutVie == 'ATTENTE'" value="ATTENTE">attente</option>
+        <option [selected]="this.filiere.statutVie == 'CLOTUREE'" value="CLOTUREE">cloturée</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="titre">Libelle</label>
+      <input id="titre" class="form-control" type="text" formControlName="libelle" [(ngModel)]="this.filiere.libelle">
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" class="form-control" formControlName="description" rows="4"
+        [(ngModel)]="this.filiere.description"></textarea>
+    </div>
+
+    <div class="d-flex">
+      <button type="submit" [disabled]="filiereForm.invalid || senddingRequest"
+        class="btn d-flex justify-content-center align-items-center btn-primary w-50 mr-1">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+      <button type="reset" [disabled]="senddingRequest" class="btn btn-danger w-50 ml-1"
+        (click)="annuler()">effacer</button>
+    </div>
+  </form>
+</p-dialog>
+
+
+<p-dialog [style]="{width: '400px'}" header="importer un fichier" [(visible)]="fileDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="fileForm" id="file-form" (ngSubmit)="saveManyNiveau($event)">
+    <div class="form-group">
+      <label for="file">Fichier</label>
+      <input id="file" class="form-control" type="file" (change)="onChange($event)" formControlName="file">
+    </div>
+    <div class="d-flex">
+      <button type="submit" [disabled]="fileForm.invalid || senddingRequest"
+        class="btn d-flex justify-content-center align-items-center btn-primary w-100">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </form>
+</p-dialog>

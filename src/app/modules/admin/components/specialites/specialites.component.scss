@@ -1,0 +1,16 @@
+.container-fluid{
+  min-height: 100vh;
+}
+.mr-mobile-right{
+  width: 100%;
+}
+.main-content{
+  padding: 1rem;
+  padding-top: 0;
+}
+@media (min-width: 980px){
+  .mr-mobile-right{
+    width: calc(100% - 18.75rem);
+    margin-left: auto;
+  }
+}

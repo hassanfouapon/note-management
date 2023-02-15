@@ -1,0 +1,175 @@
+<p-toast></p-toast>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- side menu section -->
+    <app-side-bar></app-side-bar>
+
+    <div class="mr-mobile-right">
+      <!-- header start -->
+      <app-header></app-header>
+      <!-- header end -->
+      <!-- main content start -->
+      <div class="main-content">
+
+        <div class="mt-4 mb-3">
+          <p-toolbar styleClass="mb-4">
+              <ng-template pTemplate="left">
+                  <button (click)="createAcademicYear()" pButton pRipple label="creer une année" icon="pi pi-plus" class="p-button-success mr-2"></button>
+                  <!-- <button pButton pRipple label="supprimer" icon="pi pi-trash" class="p-button-danger"></button> -->
+              </ng-template>
+
+              <ng-template pTemplate="right">
+                <button type="button"
+                      [disabled]="isGettingAll"
+                      (click) = "handleFileDialog()"
+                      label="importer"
+                      pButton pRipple icon="pi pi-upload"
+                      class="p-button-info mr-2"
+                      pTooltip="importer des fichiers csv et xlx." tooltipPosition="bottom"
+                  ></button>
+                  <div class="flex">
+                    <!-- <button type="button" pButton pRipple icon="pi pi-file" (click)="dt.exportCSV()" class="mr-2" pTooltip="CSV" tooltipPosition="bottom"></button> -->
+                    <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" label="Exporter" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                    <!-- <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-warning mr-2" pTooltip="PDF" tooltipPosition="bottom"></button> -->
+                    <!-- <button type="button" pButton pRipple icon="pi pi-filter" (click)="dt.exportCSV({selectionOnly:true})" class="p-button-info ml-auto" pTooltip="Selection Only" tooltipPosition="bottom"></button> -->
+                </div>
+              </ng-template>
+          </p-toolbar>
+        </div>
+
+
+        <p-table #dt [rows]="4" [loading]="isGettingAll" [rowHover]="true" [paginator]="true" [value]="YearsList" sortMode="multiple"
+                responsiveLayout="scroll"
+                [resizableColumns]="true"
+                [responsive]="true"
+                currentPageReportTemplate="affiche {first} à {last} sur {totalRecords} entrées"
+                [showCurrentPageReport]="true"
+                [globalFilterFields]="['libelle','description', 'statutVie', 'dateDebut','dateCloture']"
+                >
+                <ng-template pTemplate="caption">
+                  <div class="d-flex p-ai-center justify-content-between">
+                    <h5 class="p-m-0">Manager les Années academiques</h5>
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-search"></i>
+                      <input pInputText [(ngModel)]="search" (input)="dt.filterGlobal(search, 'contains')" type="text" class="form-control" style="padding-left: 30px;"
+                        placeholder="Rechercher une année..." />
+                    </span>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 3rem">
+                      <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th pSortableColumn="libelle">libelle <p-sortIcon field="libelle"></p-sortIcon>
+                      <th pSortableColumn="statutVie">status <p-sortIcon field="statutVie"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="description">description <p-sortIcon field="description"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="description">date debut <p-sortIcon field="dateDebut"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="description">date cloture <p-sortIcon field="dateCloture"></p-sortIcon>
+                    </th>
+                    <th>actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-yearsItem>
+                  <tr>
+                    <td>
+                      <p-tableCheckbox [value]="yearsItem"></p-tableCheckbox>
+                    </td>
+                    <td>{{yearsItem.libelle}}</td>
+                    <td>{{yearsItem.statutVie ? yearsItem.statutVie : 'ACTIVE'}}</td>
+                    <td>{{yearsItem.description}}</td>
+                    <td>{{yearsItem.dateDebut | date:'short' }}</td>
+                    <td>{{yearsItem.dateCloture | date:'short'}}</td>
+                    <td>
+                      <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
+                        (click)="editAcademicYear(yearsItem, $event)"></button>
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                        (click)="dropAcademicYear(yearsItem.code, yearsItem.libelle)"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <ng-template pTemplate="header">
+                <div class="d-flex align-items-center justify-content-between">
+                  Il y a au total {{ YearsList ? YearsList.length : 0 }} année(s) academique(s).
+                </div>
+              </ng-template>
+
+      </div>
+      <!-- main content end -->
+    </div>
+  </div>
+</div>
+
+
+
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<p-dialog [style]="{width: '750px'}" header="isUpdating == true ? 'Modifier '+this.AcademicYear.libelle : 'Ajouter Une Année'" [(visible)]="yearDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="AcademicYearForm" (ngSubmit)="saveAcademicYear($event)">
+    <div class="form-group" disabled>
+      <label for="code">code</label>
+      <input id="code" [disabled]="true" class="form-control" type="text" name="code" [value]="this.AcademicYear.code">
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" class="form-control" formControlName="statutVie" [(ngModel)]="this.AcademicYear.statutVie">
+        <option [selected]="this.AcademicYear.statutVie == 'ACTIVE'" value="ACTIVE">active</option>
+        <option [selected]="this.AcademicYear.statutVie == 'ATTENTE'" value="ATTENTE">attente</option>
+        <option [selected]="this.AcademicYear.statutVie == 'CLOTUREE'" value="CLOTUREE">cloturée</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="titre">Libelle</label>
+      <input id="titre" class="form-control" type="text" formControlName="libelle" [(ngModel)]="this.AcademicYear.libelle">
+    </div>
+    <div class="form-group">
+      <label for="dateDebut">Date debut</label>
+      <p-calendar id="dateDebut" styleClass='form-control p-0 border-0' [touchUI]="true" dateFormat="dd-mm-yy" formControlName="dateDebut" [showIcon]="true" [showButtonBar]="true" [(ngModel)]="this.AcademicYear.dateDebut"></p-calendar>
+      <!-- <input  class="form-control" type="datetime-local"  [value]="this.AcademicYear.dateDebut" [(ngModel)]="this.AcademicYear.dateDebut"> -->
+    </div>
+    <div class="form-group">
+      <label for="dateCloture">Date cloture</label>
+      <p-calendar id="dateCloture" styleClass='form-control p-0 border-0' [touchUI]="true" dateFormat="dd-mm-yy" formControlName="dateCloture"  [showIcon]="true" [showButtonBar]="true" [(ngModel)]="this.AcademicYear.dateCloture"></p-calendar>
+      <!-- <input id="dateCloture" class="form-control" type="datetime-local" formControlName="dateCloture" [value]="this.AcademicYear.dateCloture" [(ngModel)]="this.AcademicYear.dateCloture"> -->
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" class="form-control" formControlName="description" rows="4"  [(ngModel)]="this.AcademicYear.description"></textarea>
+    </div>
+
+    <div class="d-flex">
+      <button type="submit" [disabled]="AcademicYearForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-50 mr-1">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+      <button type="reset" [disabled]="senddingRequest || isUpdating" class="btn btn-danger w-50 ml-1" (click)="annuler()">effacer</button>
+    </div>
+  </form>
+</p-dialog>
+
+
+<p-dialog [style]="{width: '400px'}" header="importer un fichier" [(visible)]="fileDialog" [modal]="true"
+  [maximizable]="true" [baseZIndex]="10000" [draggable]="false" [resizable]="false">
+  <form [formGroup]="fileForm" id="file-form" (ngSubmit)="saveManyAcademicYear($event)">
+    <div class="form-group">
+      <label for="file">Fichier</label>
+      <input id="file" class="form-control" type="file" (change)="onChange($event)" formControlName="file">
+    </div>
+    <div class="d-flex">
+      <button type="submit" [disabled]="fileForm.invalid || senddingRequest" class="btn d-flex justify-content-center align-items-center btn-primary w-100">
+        <span *ngIf="!senddingRequest">Enregister</span>
+        <div *ngIf="senddingRequest" class="spinner-border text-sucess" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </form>
+</p-dialog>

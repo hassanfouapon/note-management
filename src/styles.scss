@@ -1,0 +1,113 @@
+/* You can add global styles to this file, and also import other style files */
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;800;900&display=swap);
+:root{
+  --black: rgb(0, 0, 0);
+  --padding: 1rem .875rem;
+  --backGround: white;
+  --main-clr: #6dc77a;
+  --main-light: #8edd9a;
+  --text-color: #ccc;
+  --transition: all ease-in-out .3s;
+  --box-shadow: 3px 3px 16px 0px #0000000d;
+
+
+
+  --clr-background: #f6f6f9;
+  --dark-variant: #677483;
+  --light: rgba(132,139,200, .18);
+  --clr-dark: #363949;
+  --white: #fff;
+}
+body {
+  font-family: 'Poppins', sans-serif !important;
+  box-sizing: border-box;
+  font-size: .9rem;
+  font-weight: 400;
+  min-height: 100vh;
+}
+
+// resetting primeng style
+.p-component{
+  font-family: 'Poppins', sans-serif !important;
+  font-size: .9rem !important;
+  transition: var(--transition);
+}
+.pi{
+  font-size: .9rem !important;
+}
+
+body.dark-mode{
+  --clr-background: rgb(4 2 2 / 93%) !important;
+  --backGround: rgb(4 2 2 / 93%) !important;
+  --light: rgb(4 2 2 / 93%) !important;
+  --box-shadow:3px 3px 16px 0px #00000031;
+
+  color: #8d91a8;
+  background: #181717f2;
+}
+
+body.dark-mode .menu-target,
+body.dark-mode .close i,
+body.dark-mode .color-theme i,
+body.dark-mode .profil .profil-info h4 span,
+body.dark-mode .side-bar .close  i,
+body.dark-mode .navbar-brand{
+  color: white !important;
+}
+body.dark-mode .side-bar a{
+  color: #8d91a8 !important;
+}
+body.dark-mode .bg-light{
+  background: var(--clr-background) !important;
+  box-shadow: var(--box-shadow);
+}
+body.dark-mode .side-bar ul .menu-item:hover,
+body.dark-mode  .side-bar ul .menu-item.active{
+  background-color: rgba(255, 255, 255, 0.082) !important;
+}
+body.dark-mode .side-bar .has-sub .sub-menu{
+  background-color: transparent;
+}
+
+// dark mode for primeng components
+
+body.dark-mode .p-paginator,
+body.dark-mode .p-datatable .p-datatable-header,
+body.dark-mode .p-datatable,
+body.dark-mode .p-datatable th,
+body.dark-mode .p-dialog-header,
+body.dark-mode .p-dialog-content,
+body.dark-mode .p-toolbar{
+  background: var(--clr-background) !important;
+  color: #8d91a8 !important;
+}
+body.dark-mode .p-dialog-mask.p-component-overlay{
+  background-color: rgb(255 255 255 / 40%);
+}
+body.dark-mode .p-dialog,
+body.dark-mode .p-datatable .p-datatable-tbody > tr{
+  background: rgba(0, 0, 0, 0.2);
+}
+body.dark-mode .p-component div,
+body.dark-mode .p-component tr,
+body.dark-mode .p-component th,
+body.dark-mode .p-component span,
+body.dark-mode .p-datatable .p-datatable-tbody > tr > td,
+body.dark-mode .p-component{
+  border-color: #343a40 !important;
+}
+body.dark-mode  input,
+body.dark-mode  .form-control,
+body.dark-mode .p-checkbox .p-checkbox-box,
+body.dark-mode .p-paginator .p-paginator-pages .p-paginator-page.p-highlight,
+body.dark-mode .p-datatable.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):hover{
+  background: #0d0d0e;
+}
+body.dark-mode .p-button,
+body.dark-mode  input,
+body.dark-mode  .form-control{
+  border: transparent;
+}
+.form-control{
+  font-size: .85rem !important;
+}
